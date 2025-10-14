@@ -8,19 +8,22 @@ export default async function handler(req, res) {
 
     const sheetId = process.env.SHEET_ID;
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
-    const privateKey = process.env.GOOGLE_PRIVATE_KEY; // multilinha
+    // normaliza quebras de linha vindas do Vercel/Windows
+    const privateKey = (process.env.GOOGLE_PRIVATE_KEY || '').replace(/\r/g, '\n');
 
     if (!sheetId) return res.status(500).json({ error: 'SHEET_ID ausente' });
     if (!clientEmail || !privateKey) return res.status(500).json({ error: 'GOOGLE_CLIENT_EMAIL/GOOGLE_PRIVATE_KEY ausentes' });
 
     try {
-        const jwt = new google.auth.JWT(clientEmail, null, privateKey, [
-            'https://www.googleapis.com/auth/spreadsheets'
-        ]);
-        await jwt.authorize();
+        const auth = new google.auth.GoogleAuth({
+            credentials: { client_email: clientEmail, private_key: privateKey },
+            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
 
-        const gs = google.sheets({ version: 'v4', auth: jwt });
-        await gs.spreadsheets.get({ spreadsheetId: sheetId }); // sanity check
+        const gs = google.sheets({ version: 'v4', auth });
+
+        // sanity check de acesso
+        await gs.spreadsheets.get({ spreadsheetId: sheetId });
 
         const row = [
             new Date().toISOString(),
