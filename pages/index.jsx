@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { toast } from "react-hot-toast";
 
 export default function Home({ theme, toggleTheme }) {
@@ -11,6 +11,46 @@ export default function Home({ theme, toggleTheme }) {
   const panelsRef = useRef(null);
   const formPanelRef = useRef(null);
   const pixPanelRef = useRef(null);
+  const [showPixActions, setShowPixActions] = useState(false);
+
+  // Extrai o valor (tag 54) do BR Code Pix
+  function parsePixAmount(brcode) {
+    if (!brcode) return null;
+    let i = 0;
+    try {
+      while (i + 4 <= brcode.length) {
+        const id = brcode.slice(i, i + 2);
+        const lenStr = brcode.slice(i + 2, i + 4);
+        const len = parseInt(lenStr, 10);
+        if (Number.isNaN(len) || len < 0) return null;
+        const start = i + 4;
+        const end = start + len;
+        if (end > brcode.length) return null;
+        const value = brcode.slice(start, end);
+        if (id === "54") {
+          // Valor no formato 54.00
+          const n = Number(value.replace(",", "."));
+          return Number.isFinite(n) ? n : null;
+        }
+        i = end;
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  const pixAmount = useMemo(() => parsePixAmount(PIX_COPIA_E_COLA), [PIX_COPIA_E_COLA]);
+  const pixAmountFormatted = useMemo(() => {
+    if (pixAmount == null) return null;
+    try {
+      return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(pixAmount);
+    } catch {
+      // Fallback simples
+      const fixed = pixAmount.toFixed(2).replace(".", ",");
+      return `R$ ${fixed}`;
+    }
+  }, [pixAmount]);
 
   // Form
   const [form, setForm] = useState({
@@ -302,6 +342,19 @@ export default function Home({ theme, toggleTheme }) {
       .catch(() => toast.error("Não foi possível copiar"));
   }
 
+  async function sharePix() {
+    if (!navigator?.share) {
+      copyPix();
+      return;
+    }
+    try {
+      await navigator.share({ title: "Pix – copia e cola", text: PIX_COPIA_E_COLA });
+      toast.success("Compartilhado");
+    } catch (e) {
+      // usuário pode cancelar; não tratar como erro crítico
+    }
+  }
+
   // Ajusta a altura do container para a altura do painel ativo (evita corte no mobile)
   useEffect(() => {
     const panels = panelsRef.current;
@@ -334,7 +387,7 @@ export default function Home({ theme, toggleTheme }) {
         <header className="mb-3 flex items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold">
-              {activeTab === "form" ? "Excursão – Cadastro" : "Pagamento via Pix"}
+              {activeTab === "form" ? "Excursão Campinas" : "Pix do Ônibus"}
             </h1>
             <p className="text-muted text-sm">
               {activeTab === "form"
@@ -536,6 +589,14 @@ export default function Home({ theme, toggleTheme }) {
           {/* Pix panel */}
           <div className="tab-panel" ref={pixPanelRef} data-active={activeTab === "pix"} aria-hidden={activeTab !== "pix"}>
             <div>
+            {pixAmountFormatted && (
+              <div className="mb-3">
+                <span className="label">Valor</span>
+                <div className="mt-1 ml-1 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-semibold">
+                  {pixAmountFormatted}
+                </div>
+              </div>
+            )}
             {!PIX_COPIA_E_COLA && (
               <div className="alert-err">
                 Defina o código Pix em <code>NEXT_PUBLIC_PIX_COPIA_E_COLA</code> ou
@@ -546,11 +607,19 @@ export default function Home({ theme, toggleTheme }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               <div className="flex flex-col items-center gap-3 p-3 border rounded-xl">
                 {pixQrDataUrl ? (
-                  <img src={pixQrDataUrl} alt="QR Code do Pix" className="w-56 h-56" />
+                  <img
+                    src={pixQrDataUrl}
+                    alt="QR Code do Pix"
+                    className="w-56 h-56 cursor-pointer"
+                    role="button"
+                    aria-label="Opções do Pix"
+                    title="Toque para opções"
+                    onClick={() => setShowPixActions(true)}
+                  />
                 ) : (
                   <div className="w-56 h-56 grid place-items-center text-muted">QR Code</div>
                 )}
-                <span className="text-sm text-muted">Escaneie no app do seu banco</span>
+                <span className="text-sm text-muted">Toque no QR para abrir opções</span>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -568,6 +637,23 @@ export default function Home({ theme, toggleTheme }) {
             </div>
             </div>
           </div>
+          {showPixActions && (
+            <div className="fixed inset-0 z-50 grid place-items-center bg-black/50" onClick={() => setShowPixActions(false)}>
+              <div className="card w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-lg font-semibold mb-2">Pagar com Pix</h2>
+                <p className="text-sm text-muted mb-3">Escolha uma opção abaixo.</p>
+                <div className="flex flex-col gap-2">
+                  <button type="button" className="btn-minimal" onClick={copyPix}>Copiar código (copia e cola)</button>
+                  {typeof navigator !== 'undefined' && navigator.share ? (
+                    <button type="button" className="btn-minimal" onClick={sharePix}>Compartilhar para app do banco</button>
+                  ) : null}
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <button type="button" className="btn-minimal" onClick={() => setShowPixActions(false)}>Fechar</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </main>
