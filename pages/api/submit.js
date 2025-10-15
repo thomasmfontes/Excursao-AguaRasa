@@ -60,12 +60,13 @@ export default async function handler(req, res) {
         // Checagem rápida de acesso
         await gs.spreadsheets.get({ spreadsheetId: sheetId });
 
-        // Monta a linha
+        // Monta a linha (alinha com cabeçalho da planilha)
+        // Colunas: Data | Nome completo | CPF ou RG | Instrumento | Comum congregação | Estado civil | Idade | Telefone
+        const cpfOrRg = body.cpf || body.rg || '';
         const row = [
             new Date().toISOString(),
             body.fullName || '',
-            body.cpf || '',
-            body.rg || '',
+            cpfOrRg,
             body.instrument || '',
             body.congregation || '',
             body.maritalStatus || '',
