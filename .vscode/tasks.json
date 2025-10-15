@@ -6,6 +6,29 @@
 			"type": "shell",
 			"command": "npm run dev",
 			"group": "build"
+		},
+		{
+			"label": "Run Next.js dev server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Dev - Next.js",
+			"type": "shell",
+			"command": "npm run dev",
+			"args": [],
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
 		}
 	]
 }

@@ -197,4 +197,29 @@ body {
   .btn .spinner {
     margin-right: 0.5rem;
   }
+
+  /* Smooth tab transitions */
+  .tab-panels {
+    position: relative;
+    overflow: hidden;
+    min-height: 0; /* allow shrinking on mobile */
+    transition: height 200ms ease;
+  }
+  .tab-panel {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(0.5rem);
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+    will-change: opacity, transform;
+  }
+  .tab-panel[data-active="true"] {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tab-panel { transition: none; }
+  }
 }
