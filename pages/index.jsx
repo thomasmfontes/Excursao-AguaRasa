@@ -61,6 +61,7 @@ export default function Home({ theme, toggleTheme }) {
     age: "",
     phone: "",
     instrument: "",
+    auxiliar: "",
   });
   const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -147,6 +148,7 @@ export default function Home({ theme, toggleTheme }) {
       "Eufônio",
       "Tuba",
     ],
+    Teclas: ["Órgão"],
   };
 
   function onlyDigits(s) {
@@ -208,6 +210,12 @@ export default function Home({ theme, toggleTheme }) {
       setErrors((er) => ({ ...er, instrument: !String(v).trim() }));
       return;
     }
+    if (name === "auxiliar") {
+      // Campo obrigatório
+      setForm((f) => ({ ...f, auxiliar: v }));
+      setErrors((er) => ({ ...er, auxiliar: !String(v).trim() }));
+      return;
+    }
     if (name === "doc") {
       const d = onlyDigits(value);
       const isCPF = d.length > 9; // 10-11 dígitos: assume CPF, até 9: RG
@@ -258,6 +266,7 @@ export default function Home({ theme, toggleTheme }) {
       doc: !hasDoc,
       congregation: !form.congregation,
       maritalStatus: !form.maritalStatus,
+      auxiliar: !form.auxiliar,
       age: !form.age,
       phone: !form.phone,
       instrument: !form.instrument,
@@ -297,6 +306,7 @@ export default function Home({ theme, toggleTheme }) {
           age: "",
           phone: "",
           instrument: "",
+          auxiliar: "",
         });
       } else {
         setStatus({ ok: false, msg: j.error || "Erro desconhecido" });
@@ -532,6 +542,22 @@ export default function Home({ theme, toggleTheme }) {
                 </select>
               </label>
 
+              {/* Auxiliar (obrigatório) */}
+              <label className="flex flex-col gap-1">
+                <span className="label">Auxiliar *</span>
+                <select
+                  className={`select ${errors.auxiliar ? "select-error" : ""}`}
+                  name="auxiliar"
+                  value={form.auxiliar}
+                  onChange={onChange}
+                  required
+                >
+                  <option value="">Selecione…</option>
+                  <option value="Sim">Sim</option>
+                  <option value="Não">Não</option>
+                </select>
+              </label>
+
               <label className="flex flex-col gap-1">
                 <span className="label">Idade *</span>
                 <input
@@ -546,7 +572,7 @@ export default function Home({ theme, toggleTheme }) {
                 />
               </label>
 
-              <label className="flex flex-col gap-1 md:col-span-2">
+              <label className="flex flex-col gap-1">
                 <span className="label">Telefone *</span>
                 <input
                   className={`input ${errors.phone ? "input-error" : ""}`}
@@ -577,7 +603,7 @@ export default function Home({ theme, toggleTheme }) {
             <div>
             {pixAmountFormatted && (
               <div className="mb-3">
-                <span className="label">Valor</span>
+                <span className="label">Valor:</span>
                 <div className="mt-1 ml-1 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-semibold">
                   {pixAmountFormatted}
                 </div>
