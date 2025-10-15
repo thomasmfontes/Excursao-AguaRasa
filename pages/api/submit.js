@@ -66,11 +66,11 @@ export default async function handler(req, res) {
             body.fullName || '',
             body.cpf || '',
             body.rg || '',
+            body.instrument || '',
             body.congregation || '',
             body.maritalStatus || '',
             body.age || '',
             body.phone || '',
-            body.instrument || '',
         ];
 
         // Se tiver cabeçalho na primeira linha da planilha, use A2
