@@ -29,6 +29,7 @@ export default async function handler(req, res) {
     if (!body.cpf && !body.rg) missing.push('cpf/rg');
     if (!body.congregation) missing.push('congregação');
     if (!body.maritalStatus) missing.push('estado civil');
+    if (!body.auxiliar) missing.push('auxiliar');
     if (!body.age) missing.push('idade');
     if (!body.phone) missing.push('telefone');
     if (!body.instrument) missing.push('instrumento');
@@ -61,7 +62,7 @@ export default async function handler(req, res) {
         await gs.spreadsheets.get({ spreadsheetId: sheetId });
 
         // Monta a linha (alinha com cabeçalho da planilha)
-        // Colunas: Data | Nome completo | CPF ou RG | Instrumento | Comum congregação | Estado civil | Idade | Telefone
+        // Colunas: Data | Nome completo | CPF ou RG | Instrumento | Comum congregação | Estado civil | Auxiliar | Idade | Telefone
         const cpfOrRg = body.cpf || body.rg || '';
         const row = [
             new Date().toISOString(),
@@ -70,6 +71,7 @@ export default async function handler(req, res) {
             body.instrument || '',
             body.congregation || '',
             body.maritalStatus || '',
+            body.auxiliar || '',
             body.age || '',
             body.phone || '',
         ];
