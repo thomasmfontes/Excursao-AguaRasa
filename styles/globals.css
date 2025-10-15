@@ -1,10 +1,57 @@
 @import "tailwindcss";
 
+:root {
+  /* Light theme */
+  --bg: rgb(248 250 252);            /* slate-50 */
+  --cardBg: rgb(255 255 255);
+  --text: rgb(15 23 42);             /* slate-900 */
+  --textMuted: rgb(51 65 85);        /* slate-700 */
+  --border: rgb(203 213 225);        /* slate-300 */
+  --placeholder: rgb(148 163 184);   /* slate-400 */
+  --primary: rgb(37 99 235);         /* blue-600 */
+  --primaryShadow: rgb(191 219 254 / 0.6); /* blue-200 */
+  --okBorder: rgb(167 243 208);
+  --okBg: rgb(236 253 245);
+  --okText: rgb(4 120 87);
+  --errBorder: rgb(252 165 165);
+  --errBg: rgb(254 242 242);
+  --errText: rgb(153 27 27);
+}
+
+[data-theme="dark"] {
+  --bg: rgb(2 6 23);                 /* slate-950 */
+  --cardBg: rgb(15 23 42);           /* slate-900 */
+  --text: rgb(226 232 240);          /* slate-200 */
+  --textMuted: rgb(203 213 225);     /* slate-300 */
+  --border: rgb(51 65 85);           /* slate-700 */
+  --placeholder: rgb(100 116 139);   /* slate-500 */
+  --primary: rgb(37 99 235);         /* blue-600 */
+  --primaryShadow: rgb(30 58 138 / 0.5);   /* blue-900 */
+  --okBorder: rgb(34 197 94);
+  --okBg: rgb(22 101 52 / 0.25);
+  --okText: rgb(134 239 172);
+  --errBorder: rgb(239 68 68);
+  --errBg: rgb(69 10 10 / 0.35);
+  --errText: rgb(252 165 165);
+}
+
+/* Global text/background using theme variables */
+body {
+  color: var(--text);
+  background-color: var(--bg);
+}
+
 @layer components {
+  .app-bg {
+    background-color: var(--bg);
+  }
+  .text-muted {
+    color: var(--textMuted);
+  }
   .card { 
     width: 100%; 
     max-width: 48rem; 
-    background-color: white; 
+    background-color: var(--cardBg); 
     border-radius: 1rem; 
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); 
     padding: 1.75rem; 
@@ -12,42 +59,45 @@
   .label { 
     font-size: 0.875rem; 
     font-weight: 600; 
-    color: rgb(51 65 85); 
+    color: var(--textMuted); 
   }
   .input { 
     width: 100%; 
-    border: 1px solid rgb(203 213 225); 
+    border: 1px solid var(--border); 
     border-radius: 0.75rem; 
     padding: 0.625rem 0.875rem; 
     font-size: 0.875rem; 
     outline: none; 
+    background-color: var(--cardBg);
+    color: var(--text);
   }
   .input:focus { 
-    border-color: rgb(124 58 237); 
-    box-shadow: 0 0 0 4px rgb(196 181 253 / 0.5); 
+    border-color: var(--primary); 
+    box-shadow: 0 0 0 4px var(--primaryShadow); 
   }
   .input::placeholder { 
-    color: rgb(148 163 184); 
+    color: var(--placeholder); 
   }
   .select { 
     width: 100%; 
-    border: 1px solid rgb(203 213 225); 
+    border: 1px solid var(--border); 
     border-radius: 0.75rem; 
     padding: 0.625rem 0.875rem; 
     font-size: 0.875rem; 
     outline: none; 
-    background-color: white; 
+    background-color: var(--cardBg); 
+    color: var(--text);
   }
   .select:focus { 
-    border-color: rgb(124 58 237); 
-    box-shadow: 0 0 0 4px rgb(196 181 253 / 0.5); 
+    border-color: var(--primary); 
+    box-shadow: 0 0 0 4px var(--primaryShadow); 
   }
   .btn { 
     width: 100%; 
     margin-top: 0.75rem; 
     padding: 0.75rem; 
     border-radius: 0.75rem; 
-    background-color: rgb(124 58 237); 
+    background-color: var(--primary); 
     color: white; 
     font-weight: 600; 
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); 
@@ -67,19 +117,84 @@
   .alert-ok { 
     margin-top: 0.5rem; 
     border-radius: 0.75rem; 
-    border: 1px solid rgb(167 243 208); 
-    background-color: rgb(236 253 245); 
-    color: rgb(4 120 87); 
+    border: 1px solid var(--okBorder); 
+    background-color: var(--okBg); 
+    color: var(--okText); 
     font-size: 0.875rem; 
     padding: 0.5rem 0.75rem; 
   }
   .alert-err { 
     margin-top: 0.5rem; 
     border-radius: 0.75rem; 
-    border: 1px solid rgb(252 165 165); 
-    background-color: rgb(254 242 242); 
-    color: rgb(153 27 27); 
+    border: 1px solid var(--errBorder); 
+    background-color: var(--errBg); 
+    color: var(--errText); 
     font-size: 0.875rem; 
     padding: 0.5rem 0.75rem; 
+  }
+
+  /* Error styles */
+  .input-error,
+  .select-error {
+    border-color: var(--errBorder) !important;
+    box-shadow: 0 0 0 4px var(--errBg);
+  }
+  .field-error-text {
+    color: var(--errText);
+    font-size: 0.75rem;
+  }
+
+  .btn-ghost {
+    padding: 0.375rem 0.625rem;
+    border-radius: 1rem;
+    background-color: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .btn-ghost:hover {
+    background-color: rgb(148 163 184 / 0.15);
+  }
+
+  /* Minimal submit button matching theme */
+  .btn-minimal {
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.75rem;
+    background-color: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-minimal:hover {
+    background-color: rgb(148 163 184 / 0.15);
+  }
+  .btn-minimal:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--primaryShadow);
+    border-color: var(--primary);
+  }
+  .btn-minimal:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  /* Simple spinner for loading states */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-top-color: #fff;
+    display: inline-block;
+    animation: spin 0.8s linear infinite;
+  }
+  .btn .spinner {
+    margin-right: 0.5rem;
   }
 }

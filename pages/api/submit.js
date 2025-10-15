@@ -23,9 +23,17 @@ export default async function handler(req, res) {
         try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'JSON inválido' }); }
     }
 
-    // Validação mínima
-    if (!body.fullName || !body.cpf) {
-        return res.status(400).json({ error: 'nome e cpf obrigatorios' });
+    // Validação de campos obrigatórios (CPF OU RG)
+    const missing = [];
+    if (!body.fullName) missing.push('nome');
+    if (!body.cpf && !body.rg) missing.push('cpf/rg');
+    if (!body.congregation) missing.push('congregação');
+    if (!body.maritalStatus) missing.push('estado civil');
+    if (!body.age) missing.push('idade');
+    if (!body.phone) missing.push('telefone');
+    if (!body.instrument) missing.push('instrumento');
+    if (missing.length) {
+        return res.status(400).json({ error: `campos obrigatórios faltando: ${missing.join(', ')}` });
     }
 
     // Envs
@@ -62,6 +70,7 @@ export default async function handler(req, res) {
             body.maritalStatus || '',
             body.age || '',
             body.phone || '',
+            body.instrument || '',
         ];
 
         // Se tiver cabeçalho na primeira linha da planilha, use A2
