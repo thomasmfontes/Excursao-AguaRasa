@@ -1,0 +1,23 @@
+{
+    "name": "Excursão Campinas",
+    "short_name": "Excursão",
+    "description": "Formulário de inscrição para a Excursão Campinas",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8fafc",
+    "theme_color": "#2563eb",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "any",
+            "type": "image/x-icon"
+        }
+    ],
+    "categories": [
+        "travel",
+        "utilities"
+    ],
+    "lang": "pt-BR",
+    "dir": "ltr"
+}
